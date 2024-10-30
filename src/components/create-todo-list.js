@@ -48,6 +48,7 @@ export const CreateTodoList = styled(CreateTodoListContainer)`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	margin-bottom: 30px;
 
 	.create-todo-list__controls {
 		display: flex;

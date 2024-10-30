@@ -28,6 +28,30 @@ const TodosContainer = ({ className, id, title, todos, updateTodos, setUpdateTod
 		}
 	};
 
+	const onDeleteTodoListClick = () => {
+		requestServer(`/todoLists/${id}`, 'DELETE').then(() => {
+			setUpdateTodos(!updateTodos);
+		});
+	};
+
+	const onDoneChange = (todoId, done) => {
+		const findedTodoIndex = todos.findIndex(({ id }) => todoId === id);
+		const updatedTodos = todos;
+		updatedTodos[findedTodoIndex].done = !done;
+		requestServer(`/todoLists/${id}`, 'PATCH', { todos: updatedTodos }).then(() => {
+			setUpdateTodos(!updateTodos);
+		});
+	};
+
+	const onDeleteTodoClick = (todoId) => {
+		const findedTodoIndex = todos.findIndex(({ id }) => todoId === id);
+		const updatedTodos = todos;
+		updatedTodos.splice(findedTodoIndex, 1);
+		requestServer(`/todoLists/${id}`, 'PATCH', { todos: updatedTodos }).then(() => {
+			setUpdateTodos(!updateTodos);
+		});
+	};
+
 	return (
 		<div className={className}>
 			<H3>{title}</H3>
@@ -39,12 +63,20 @@ const TodosContainer = ({ className, id, title, todos, updateTodos, setUpdateTod
 					onChange={onTodoChange}
 				/>
 				<Button type="submit">Add todo</Button>
+				<Button onClick={onDeleteTodoListClick}>Delete</Button>
 			</form>
 			{todos.map(({ id, title, done }) => {
 				return (
-					<div key={id}>
-						<Input type="checkbox" />
+					<div className="todo" key={id}>
+						<Input
+							type="checkbox"
+							checked={done ? true : false}
+							onChange={() => onDoneChange(id, done)}
+						/>
 						{title}
+						<Button padding="0" onClick={() => onDeleteTodoClick(id)}>
+							Delete
+						</Button>
 					</div>
 				);
 			})}
@@ -56,5 +88,12 @@ export const Todos = styled(TodosContainer)`
 	.create-todo__controls {
 		display: flex;
 		gap: 10px;
+		margin-bottom: 15px;
+	}
+
+	.todo {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 10px;
 	}
 `;
